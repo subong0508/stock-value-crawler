@@ -1,24 +1,14 @@
 ### 환경 세팅
 
-**1. anaconda 환경 세팅**
+**anaconda 환경 세팅**
 
 설치는 [링크](https://docs.anaconda.com/anaconda/install/)를 참고해주세요.
 
 ```bash
 conda env create -f environment.yml
 conda activate stock-value-crawler
+python3 -m playwright install
 ```
-
-**2. Chrome Driver 설치**
-
-[링크](https://developer.chrome.com/docs/chromedriver/downloads?hl=ko)를 참고하여 크롬 드라이버를 설치 후 
-main.py의 아래 코드를 설치한 크롬 드라이버의 bin 파일 경로로 바꿔주세요.
-
-```python3
-CHROMEDRIVER_PATH = "/usr/local/bin/chromedriver"
-```
-
-
 
 ### 코드 실행 방법
 
