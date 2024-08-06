@@ -94,14 +94,10 @@ async def get_future_stock_values(today_values: DataFrame):
 
 
 def extract_valuable_stocks(future_values: DataFrame, col: str, top_k: int) -> List[str]:
-    return (
-        future_values.groupby(["market", "종목코드"])[col]
-        .sum()
-        .reset_index()
-        .sort_values(col, ascending=False)
-        .head(top_k)["종목코드"]
-        .to_list()
-    )
+    grouped_sum = future_values.groupby(["market", "종목코드"])[col].sum().reset_index()
+    grouped_sum[f"{col}_rank"] = grouped_sum[col].rank(method="min", ascending=False)
+    top_groups = grouped_sum[grouped_sum[f"{col}_rank"] <= top_k]["종목코드"].unique().tolist()
+    return top_groups
 
 
 def save_results(today_values: DataFrame, future_values: DataFrame, valuable_stocks: List[str], file_path: str):
