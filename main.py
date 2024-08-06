@@ -66,7 +66,7 @@ async def bounded_scrape(stock_code: str, semaphore: asyncio.Semaphore, progress
 
 
 async def get_future_stock_values(today_values: DataFrame):
-    stocks = today_values.sample(frac=1.0)[["market", "종목코드", "종목명"]].to_dict(orient="records")
+    stocks = today_values[["market", "종목코드", "종목명"]].to_dict(orient="records")
     stock_codes = [s["종목코드"] for s in stocks]
 
     semaphore = asyncio.Semaphore(concurrency_cnt)
