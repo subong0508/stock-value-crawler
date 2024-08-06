@@ -94,10 +94,12 @@ async def get_future_stock_values(today_values: DataFrame):
 
 
 def extract_valuable_stocks(future_values: DataFrame, col: str, top_k: int) -> List[str]:
-    grouped_sum = future_values.groupby(["market", "종목코드"])[col].sum().reset_index()
-    grouped_sum[f"{col}_rank"] = grouped_sum[col].rank(method="min", ascending=False)
-    grouped_sum = grouped_sum.sort_values(f"{col}_rank")
-    top_groups = grouped_sum[grouped_sum[f"{col}_rank"] <= top_k]["종목코드"].unique().tolist()
+    top_groups = []
+    for market in MARKET_LIST:
+        grouped_sum = future_values[future_values["market"] == market].groupby(["종목코드"])[col].sum().reset_index()
+        grouped_sum[f"{col}_rank"] = grouped_sum[col].rank(method="min", ascending=False)
+        grouped_sum = grouped_sum.sort_values(f"{col}_rank")
+        top_groups += grouped_sum[grouped_sum[f"{col}_rank"] <= top_k]["종목코드"].unique().tolist()
     return top_groups
 
 
