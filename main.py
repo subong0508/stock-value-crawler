@@ -4,8 +4,8 @@
 ###########
 # imports #
 ###########
+import io
 import os
-import time
 import asyncio
 import requests
 from typing import List, Optional
@@ -32,9 +32,9 @@ MARKET_LIST = ["KOSPI", "KOSDAQ"]
 STOCK_REPORT_URL = "https://navercomp.wisereport.co.kr/v2/company/c1010001.aspx?cmp_cd={stock_code}"
 TABLE_IDS = [f"cTB{(year := datetime.today().year - 2000) + x}" for x in range(0, 3)[::-1]]
 
-TODAY_VALUES_COLUMNS = ["재무년월일", "market", "종목코드", "EPS", "BPS", "PER", "PBR"]
+TODAY_VALUES_COLUMNS = ["재무년월일", "market", "종목코드", "종목명", "EPS", "BPS", "PER", "PBR"]
 FUTURE_VALUES_COLUMNS = [
-    "재무년월일", "market", "종목코드", "매출액", "YoY", "영업이익", "당기순이익",
+    "재무년월일", "market", "종목코드", "종목명", "매출액", "YoY", "영업이익", "당기순이익",
     "EPS", "BPS", "PER", "PBR", "ROE", "EV/EBITDA"
 ]
 
@@ -53,6 +53,7 @@ def get_today_stock_values(dt: str) -> DataFrame:
         df = df.assign(market=market)
     df = df.assign(재무년월일="TODAY")
     df = df.reset_index().rename(columns={"티커": "종목코드"})
+    df["종목명"] = df["종목코드"].apply(stock.get_market_ticker_name)
     return df[TODAY_VALUES_COLUMNS]
 
 
@@ -72,7 +73,7 @@ def scrape_future_values(url: str) -> Optional[BeautifulSoup]:
 
     driver = webdriver.Chrome(service=service, options=options)
     driver.get(url)
-    time.sleep(5)
+    driver.implicitly_wait(5)
     page_source = driver.page_source
     driver.quit()
 
@@ -83,7 +84,7 @@ def scrape_future_values(url: str) -> Optional[BeautifulSoup]:
 
 
 async def get_future_stock_values(today_values: DataFrame):
-    stocks = today_values[["market", "종목코드"]].to_dict(orient="records")
+    stocks = today_values[["market", "종목코드", "종목명"]].to_dict(orient="records")
     stock_codes = [s["종목코드"] for s in stocks]
 
     loop = asyncio.get_event_loop()
@@ -94,15 +95,15 @@ async def get_future_stock_values(today_values: DataFrame):
     pattern = r"\d{4}\(E\)"
     future_values = pd.DataFrame()
     for stock, table in zip(stocks, table_results):
-        stock_code, market = stock["종목코드"], stock["market"]
+        market, stock_code, stock_name = stock["market"], stock["종목코드"], stock["종목명"]
         if table:
-            table_str = str(table)
-            df = pd.read_html(table_str)[0]
+            df = pd.read_html(io.StringIO(str(table)))[0]
             df.columns = [extract_column_name(col[1]) for col in df.columns]
             df = df[df["재무년월"].str.contains(pattern, regex=True)]
-            df = df.assign(market=market)
-            df = df.assign(종목코드=stock_code)
             if not df.empty:
+                df = df.assign(market=market)
+                df = df.assign(종목코드=stock_code)
+                df = df.assign(종목명=stock_name)
                 future_values = pd.concat([future_values, df])
 
     future_values = future_values.rename(columns={"금액": "매출액", "재무년월": "재무년월일"})
@@ -155,7 +156,7 @@ async def main():
     logger.info(f"오늘자 주식 종목 가져오기 완료. 종목 수 : {today_values.shape[0]}")
 
     future_values = await get_future_stock_values(today_values)
-    logger.info(f"미래 주식 가치 가져오기 완료. 종목 수 : {len(future_values['종목코드'].unique())}")
+    logger.info(f"미래 주식 가치 스크래핑 완료. 종목 수 : {len(future_values['종목코드'].unique())}")
 
     valuable_stocks = extract_valuable_stocks(future_values, "YoY", top_k)
     save_results(today_values, future_values, valuable_stocks, file_path)
