@@ -41,8 +41,9 @@ concurrency_cnt = os.cpu_count() * 5
 def get_today_stock_values(dt: str) -> DataFrame:
     df = pd.DataFrame()
     for market in MARKET_LIST:
-        df = pd.concat([df, stock.get_market_fundamental(dt, market=market)])
-        df = df.assign(market=market)
+        df_temp = stock.get_market_fundamental(dt, market=market)
+        df_temp = df_temp.assign(market=market)
+        df = pd.concat([df, df_temp])
     df = df.assign(재무년월일="TODAY")
     df = df.reset_index().rename(columns={"티커": "종목코드"})
     df["종목명"] = df["종목코드"].apply(stock.get_market_ticker_name)
@@ -65,7 +66,7 @@ async def bounded_scrape(stock_code: str, semaphore: asyncio.Semaphore, progress
 
 
 async def get_future_stock_values(today_values: DataFrame):
-    stocks = today_values[["market", "종목코드", "종목명"]].to_dict(orient="records")
+    stocks = today_values.sample(frac=1.0)[["market", "종목코드", "종목명"]].to_dict(orient="records")
     stock_codes = [s["종목코드"] for s in stocks]
 
     semaphore = asyncio.Semaphore(concurrency_cnt)
