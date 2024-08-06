@@ -1,8 +1,6 @@
 ### 환경 세팅
 
-**anaconda 환경 세팅**
-
-설치는 [링크](https://docs.anaconda.com/anaconda/install/)를 참고해주세요.
+anaconda 설치는 [링크](https://docs.anaconda.com/anaconda/install/)를 참고해주세요.
 
 ```bash
 conda env create -f environment.yml
