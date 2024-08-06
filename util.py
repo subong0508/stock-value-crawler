@@ -65,6 +65,5 @@ async def fetch_page_content(
         return None
 
 
-
 def extract_column_name(s):
     return re.match(r'^[^ ]+', s).group(0)
