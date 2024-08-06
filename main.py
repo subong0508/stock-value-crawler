@@ -110,7 +110,7 @@ def save_results(today_values: DataFrame, future_values: DataFrame, valuable_sto
     df = df[df["종목코드"].isin(valuable_stocks)]
     df["rank1"] = pd.Categorical(df["종목코드"], categories=valuable_stocks, ordered=True)
     df["rank2"] = pd.Categorical(df["재무년월일"], categories=["TODAY"]+sorted(df["재무년월일"].unique())[:-1], ordered=True)
-    df = df.sort_values(["rank1", "rank2"])
+    df = df.sort_values(["market", "rank1", "rank2"], ascending=[False, True, True])
     df = df[FUTURE_VALUES_COLUMNS]
     df.to_csv(file_path, index=False)
 
