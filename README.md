@@ -3,8 +3,9 @@
 anaconda 설치는 [링크](https://docs.anaconda.com/anaconda/install/)를 참고해주세요.
 
 ```bash
-conda env create -f environment.yml
-conda activate stock-value-crawler
+conda create -n stock-value-crawler python=3.10
+conda activate stock-value-cralwer
+pip install -r requirements.txt
 playwright install
 ```
 
