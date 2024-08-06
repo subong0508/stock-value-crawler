@@ -11,7 +11,13 @@ conda activate stock-value-crawler
 
 **2. Chrome Driver 설치**
 
-[링크](https://developer.chrome.com/docs/chromedriver/downloads?hl=ko)를 참고하여 크롬 드라이버를 설치 후 bin 파일의 경로를 파악합니다.
+[링크](https://developer.chrome.com/docs/chromedriver/downloads?hl=ko)를 참고하여 크롬 드라이버를 설치 후 
+main.py의 아래 코드를 설치한 크롬 드라이버의 bin 파일 경로로 바꿔주세요.
+
+```python3
+CHROMEDRIVER_PATH = "/usr/local/bin/chromedriver"
+```
+
 
 
 ### 코드 실행 방법
