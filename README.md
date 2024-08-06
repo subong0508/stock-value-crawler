@@ -5,7 +5,7 @@ anaconda 설치는 [링크](https://docs.anaconda.com/anaconda/install/)를 참�
 ```bash
 conda env create -f environment.yml
 conda activate stock-value-crawler
-python3 -m playwright install
+playwright install
 ```
 
 ### 코드 실행 방법
