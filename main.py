@@ -11,9 +11,9 @@ import random
 import asyncio
 from dataclasses import dataclass
 
-from tqdm.asyncio import tqdm
-from typing import List, Optional, Tuple
 from datetime import datetime
+from tqdm.asyncio import tqdm
+from typing import List, Optional
 from argparse import ArgumentParser
 
 import numpy as np
