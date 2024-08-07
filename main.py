@@ -84,7 +84,7 @@ async def bounded_scrape(stock_code: str, semaphore: asyncio.Semaphore, progress
         return result
 
 
-async def get_stock_values(stocks: List[Stock], debug: bool = False) -> Tuple[DataFrame, DataFrame]:
+async def get_stock_values(stocks: List[Stock], debug: bool = False) -> DataFrame:
     if debug:
         random.shuffle(stocks)
         stocks = stocks[:100]
