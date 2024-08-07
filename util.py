@@ -50,9 +50,9 @@ async def fetch_page_content(
                     content = await page.content()
                     return content
                 except TimeoutError as e:
-                    logger.error(f"Timeout error on attempt {attempt} for URL {url}: {e}")
+                    logger.warning(f"Timeout error on attempt {attempt} for URL {url}: {e}")
                 except Exception as e:
-                    logger.error(f"Exception on attempt {attempt} for URL {url}: {e}")
+                    logger.warning(f"Exception on attempt {attempt} for URL {url}: {e}")
                 finally:
                     if page:
                         await page.close()
