@@ -9,11 +9,10 @@ import os
 import sys
 import random
 import asyncio
-from dataclasses import dataclass
-
 from datetime import datetime
 from tqdm.asyncio import tqdm
 from typing import List, Optional
+from dataclasses import dataclass
 from argparse import ArgumentParser
 
 import numpy as np
@@ -98,8 +97,8 @@ async def get_stock_values(stocks: List[Stock], debug: bool = False) -> DataFram
 
     pattern = r"\d{4}\(E\)"
     stock_values = pd.DataFrame()
-    for stock_, tables in zip(stocks, table_results):
-        market, stock_code, stock_name = stock_.market, stock_.stock_code, stock_.stock_name
+    for s, tables in zip(stocks, table_results):
+        market, stock_code, stock_name = s.market, s.stock_code, s.stock_name
         if tables:
             table1, table2 = tables
 
