@@ -13,7 +13,7 @@ from playwright.async_api import async_playwright, TimeoutError
 #############
 # constants #
 #############
-DIV_ID = "frmFS1"
+DIV_IDS = ["pArea", "frmFS1"]
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 
@@ -44,7 +44,9 @@ async def fetch_page_content(
                 await page.set_extra_http_headers(HEADERS)
                 try:
                     await page.goto(url, timeout=60000)
-                    await page.wait_for_selector(f"div#{DIV_ID}", timeout=10000)
+                    await asyncio.gather(
+                        *(page.wait_for_selector(f"div#{div_id}", timeout=10000) for div_id in DIV_IDS)
+                    )
                     content = await page.content()
                     return content
                 except TimeoutError as e:
