@@ -134,11 +134,7 @@ def extract_top_stocks(stock_values: DataFrame, algorithm: str, top_k: int) -> L
         col = algorithm
         stock_values_ = stock_values[stock_values["market"] == market]
         if col == "YoY":
-            future_values = (
-                stock_values_[stock_values_["재무연월"] != "TODAY"]
-                .sort_values(["종목코드", "재무연월"])
-                .drop_duplicates(subset=["market", "종목코드"], keep="last")
-            )
+            future_values = stock_values_[stock_values_["재무연월"] != "TODAY"]
             grouped_sum = future_values.groupby(["종목코드"])["YoY"].sum().reset_index()
             grouped_sum[f"YoY_rank"] = grouped_sum[col].rank(method="min", ascending=False)
             top_groups += grouped_sum.sort_values(f"YoY_rank").head(top_k)["종목코드"].unique().tolist()
